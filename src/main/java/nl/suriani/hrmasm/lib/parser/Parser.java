@@ -37,8 +37,9 @@ public class Parser {
 		var jump0Definition = new ParserRule(ParserRuleType.JUMP, literal(JUMP0), type(ID));
 		var jumpnDefinition = new ParserRule(ParserRuleType.JUMP, literal(JUMPN), type(ID));
 		var labelDefinition = new ParserRule(ParserRuleType.LABEL, type(ID), literal(Literal.COLON));
-		var movDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(MOV), type(ID), literal(COMMA), type(ID));
-		var movWithAliasDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(MOV), type(ID), literal(COMMA), type(ALIAS_REFERENCE));
+		var labeledConstantDefinition = new ParserRule(ParserRuleType.CONSTANT_DEFINITION, type(ID), literal(Literal.COLON), literal(DB), type(STRING));
+		var movDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(MOV), literal(RDI), literal(COMMA), type(ID));
+		var movWithAliasDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(MOV), literal(RDI), literal(COMMA), type(ALIAS_REFERENCE));
 		var outboxDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(OUTBOX));
 		var retDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(RET));
 		var retvDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(RETV));
@@ -71,6 +72,7 @@ public class Parser {
 				jump0Definition,
 				jumpnDefinition,
 				inboxDefinition,
+				labeledConstantDefinition,
 				movDefinition,
 				movWithAliasDefinition,
 				outboxDefinition,

@@ -76,7 +76,9 @@ public class Lexer {
 				.map(value -> new Token(text, value))
 				.or(() -> ValueType.fromText(text)
 						.map(Value::type)
-						.map(value -> new Token(text, value)));
+						.map(value -> value.getType() == ValueType.STRING ?
+								new Token(text.substring(1, text.length() -1), value) :
+								new Token(text, value)));
 	}
 
 	private boolean canIgnore(char c) {

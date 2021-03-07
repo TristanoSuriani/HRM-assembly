@@ -4,30 +4,30 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public enum Literal {
-
+	ADD("add"),
 	ALIAS("alias"),
+	BUMP_MIN("bump-"),
+	BUMP_PLUS("bump+"),
 	COLON(":"),
 	COMMA(","),
-	ADD("add"),
+	COPYFROM("copyfrom"),
+	COPYFROM_STAR("copyfrom*"),
+	COPYTO("copyto"),
+	COPYTO_STAR("copyto*"),
+	DB("db"),
 	DIV("div"),
 	EQ("eq"),
-	MUL("mul"),
-	SUB("sub"),
-	BUMP_PLUS("bump+"),
-	BUMP_MIN("bump-"),
-	DB("db"),
-	COPYFROM("copyfrom"),
-	COPYTO("copyto"),
-	COPYFROM_STAR("copyfrom*"),
-	COPYTO_STAR("copyto*"),
+	INBOX("inbox"),
 	JUMP("jump"),
 	JUMP0("jump0"),
 	JUMPN("jumpn"),
 	MOV("mov"),
-	INBOX("inbox"),
+	MUL("mul"),
 	OUTBOX("outbox"),
+	RDI("rdi"),
 	RET("ret"),
 	RETV("retv"),
+	SUB("sub"),
 	SYSCALL("syscall");
 
 	public final String text;

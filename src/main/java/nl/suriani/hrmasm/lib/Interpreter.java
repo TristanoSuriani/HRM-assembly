@@ -10,9 +10,9 @@ import nl.suriani.hrmasm.lib.parser.ValueType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static nl.suriani.hrmasm.lib.parser.ParserRuleType.CONSTANT_DEFINITION;
 import static nl.suriani.hrmasm.lib.parser.ParserRuleType.LABEL;
 
 @AllArgsConstructor
@@ -23,6 +23,7 @@ public class Interpreter {
 	public void run(AST program) {
 		Map<String, Integer> labels = prefillLabels();
 		Map<String, Integer> aliases = new HashMap<>();
+		prefillConstants();
 		while (cpu.hasNextInstruction() && cpu.getProgramState() != ProgramState.TERMINATED) {
 			var statement = getStatement();
 			System.out.println(String.format(LOG_TEMPLATE,
@@ -30,6 +31,7 @@ public class Interpreter {
 					cpu.getCache(),
 					statement.getOriginalStatement().reconstruct()));
 			switch (statement.getType()) {
+				case CONSTANT_DEFINITION:
 				case EMPTY:
 				case LABEL:
 					cpu.updateProgramCounter();
@@ -50,6 +52,12 @@ public class Interpreter {
 		}
 	}
 
+	private void prefillConstants() {
+		cpu.getProgram().getStatements().stream()
+				.filter(statement -> statement.getType() == CONSTANT_DEFINITION)
+				.forEach(statement -> cpu.putToMemory(statement.getChildren().get(0).getText().get(),
+						statement.getChildren().get(3).getText().get()));
+	}
 
 	private Map<String, Integer> prefillLabels() {
 		Map<String, Integer> labels = new HashMap<>();
@@ -97,16 +105,31 @@ public class Interpreter {
 				handleCopytoStar(statement, aliases);
 				break;
 
+			case EQ:
+				handleEq(statement, aliases);
+
 			case INBOX:
 				handleInbox();
+				break;
+
+			case MOV:
+				handleMov(statement, aliases);
 				break;
 
 			case OUTBOX:
 				handleOutbox();
 				break;
 
+			case RET:
+				cpu.setProgramState(ProgramState.TERMINATED);
+				break;
+
 			case SUB:
 				handleSub(statement, aliases);
+				break;
+
+			case SYSCALL:
+				handleSyscall(statement);
 				break;
 
 			default:
@@ -114,15 +137,37 @@ public class Interpreter {
 		}
 	}
 
-	private Optional<Value> getFirstParameter(ParsedStatement statement) {
+	private Value getFirstParameter(ParsedStatement statement) {
 		return getAllNonLiteralChildren(statement).stream()
-				.findFirst();
+				.findFirst()
+				.orElseThrow(() -> new IllegalStateException("Missing argument"));
 	}
 
-	private Optional<Value> getSecondParameter(ParsedStatement statement) {
+	private Value getSecondParameter(ParsedStatement statement) {
 		return getAllNonLiteralChildren(statement).stream()
 				.skip(1)
-				.findFirst();
+				.findFirst()
+				.orElseThrow(() -> new IllegalStateException("Missing argument"));
+	}
+
+	private Value getLiteralFirstParameter(ParsedStatement statement) {
+		return getAllLiteralChildren(statement).stream()
+				.skip(1)
+				.findFirst()
+				.orElseThrow(() -> new IllegalStateException("Missing argument"));
+	}
+
+	private Value getLiteralSecondParameter(ParsedStatement statement) {
+		return getAllLiteralChildren(statement).stream()
+				.skip(2)
+				.findFirst()
+				.orElseThrow(() -> new IllegalStateException("Missing argument"));
+	}
+
+	private List<Value> getAllLiteralChildren(ParsedStatement statement) {
+		return statement.getChildren().stream()
+				.filter(value -> value.getType() == ValueType.LITERAL)
+				.collect(Collectors.toList());
 	}
 
 	private List<Value> getAllNonLiteralChildren(ParsedStatement statement) {
@@ -139,8 +184,8 @@ public class Interpreter {
 	}
 
 	private void handleAlias(ParsedStatement statement, Map<String, Integer> aliases) {
-		var alias = getFirstParameter(statement).get().getText().get();
-		var registerNumber = Integer.parseInt(getSecondParameter(statement).get().getText().get());
+		var alias = getFirstParameter(statement).getText().get();
+		var registerNumber = Integer.parseInt(getSecondParameter(statement).getText().get());
 		aliases.put(alias, registerNumber);
 	}
 
@@ -179,6 +224,16 @@ public class Interpreter {
 		var registerNumber = getRegisterNumber(statement, aliases);
 		var value = Integer.parseInt(cpu.getFromRegister(registerNumber));
 		cpu.setToRegister(value, cpu.getCache());
+	}
+
+	private void handleEq(ParsedStatement statement, Map<String, Integer> aliases) {
+		var registerNumber = getRegisterNumber(statement, aliases);
+		var value = cpu.getFromRegister(registerNumber);
+		if (value.equals(cpu.getCache())) {
+			cpu.setCache("0");
+		} else {
+			cpu.setCache("-1");
+		}
 	}
 
 	private void handleInbox() {
@@ -231,6 +286,33 @@ public class Interpreter {
 		}
 	}
 
+	private void handleMov(ParsedStatement statement, Map<String, Integer> aliases) {
+		var to = extractTo(statement);
+		var from = getFirstParameter(statement).getText()
+				.orElseThrow(() -> new IllegalStateException("Missing text"));
+		if (to.equals(Literal.RDI.getText())) {
+			var value = cpu.getFromMemory(from);
+			if (value == null) {
+				var registerNumber = aliases.get(from);
+				value = cpu.getFromRegister(registerNumber);
+				cpu.setRDI(value);
+			} else {
+				cpu.setRDI(value);
+			}
+			cpu.setCache(value);
+		}
+	}
+
+	private String extractTo(ParsedStatement statement) {
+		try {
+			return getLiteralFirstParameter(statement).getText()
+					.orElseThrow(() -> new IllegalStateException("Missing text"));
+		} catch (IllegalStateException illegalStateException) {
+			return getFirstParameter(statement).getText()
+					.orElseThrow(() -> new IllegalStateException("Missing text"));
+		}
+	}
+
 	private void handleOutbox() {
 		cpu.addToOutbox(cpu.getCache());
 		cpu.setCache(null);
@@ -250,6 +332,17 @@ public class Interpreter {
 		}
 	}
 
+	private void handleSyscall(ParsedStatement statement) {
+		var systemProgram = getFirstParameter(statement).getText().get();
+		var rdi = cpu.getRDI();
+		if (systemProgram.equals("gets")) {
+			var value = cpu.readInbox();
+			cpu.setCache(value);
+		} else if (systemProgram.equals("puts")) {
+			System.out.println(rdi);
+		}
+	}
+
 	private ParsedStatement getStatement() {
 		var program = cpu.getProgram();
 		return program.getStatements().stream()
@@ -259,11 +352,11 @@ public class Interpreter {
 	}
 
 	private String getLabel(ParsedStatement statement) {
-		return getFirstParameter(statement).get().getText().get();
+		return getFirstParameter(statement).getText().get();
 	}
 
 	private int getRegisterNumber(ParsedStatement statement, Map<String, Integer> aliases) {
-		var firstParameter = getFirstParameter(statement).get();
+		var firstParameter = getFirstParameter(statement);
 		if (firstParameter.getType() == ValueType.ALIAS_REFERENCE) {
 			return aliases.get(firstParameter.getText().get());
 		}

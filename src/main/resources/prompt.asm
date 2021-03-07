@@ -1,3 +1,4 @@
+.program
 alias #input 0
 
 start:
@@ -9,7 +10,7 @@ start:
 prompt-loop:
     mov         rdi, delimiter
     syscall     puts
-    
+
     syscall     gets                ; call the "system" subroutine gets -> retrieves input from the user
     copyto      #input
 
@@ -26,28 +27,21 @@ echo:
     mov         rdi, #input
     syscall     puts
 
-    mov         rdi, newline
-    syscall     puts
-
     jump        prompt-loop
 
 end:
-    mov         rdi, banner         ; copy constant banner
+    mov         rdi, greetings         ; copy constant banner
     syscall     puts                ; call the "system" subroutine puts
 
     ret
 
-banner:
-    db          "HRM-Assembly by Tristano Suriani\n"
+; Constant definitions
+banner:         db          "HRM-Assembly by Tristano Suriani"
 
-delimiter:
-    db          "$hrma |> "
+delimiter:      db          "$hrma |> "
 
-echo_prefix:
-    db          "You said: "
+echo_prefix:    db          "You said: "
 
-newline:
-    db          "\n"
+greetings:      db          "Bye."
 
-quit:
-    db          "quit"
+quit:           db          "quit"
