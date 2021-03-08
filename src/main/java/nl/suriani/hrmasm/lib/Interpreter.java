@@ -144,6 +144,11 @@ public class Interpreter {
 				cpu.setProgramState(ProgramState.TERMINATED);
 				break;
 
+			case RETV:
+				cpu.setProgramState(ProgramState.TERMINATED);
+				cpu.setRDI(cpu.getCache());
+				break;
+
 			case SUB:
 				handleSub(statement, aliases);
 				break;

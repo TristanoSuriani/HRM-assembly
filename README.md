@@ -37,5 +37,5 @@ Implementation of the assembly of the game Human Resources Machine. It is not su
 | mov           | mov [Rn], [value] / mov [RDI], [value] | Copies a value to a register and saves it to the cache |
 | mul           | mul [Rn]      | Multiplies cache value to register value and sets to the cache |
 | ret           | ret      | Stops program execution without value |
-| retv          | retv      | Stops program execution with value |
+| retv          | retv      | Stops program execution with value (saved in RDI) |
 | syscall       | syscall "some system program..." | Allows to call a system program. If a parameter is used it must be set to RDI. The return value is set to the cache |
