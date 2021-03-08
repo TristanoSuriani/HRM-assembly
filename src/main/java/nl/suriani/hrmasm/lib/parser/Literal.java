@@ -22,6 +22,7 @@ public enum Literal {
 	JUMP0("jump0"),
 	JUMPN("jumpn"),
 	MOV("mov"),
+	MOD("mod"),
 	MUL("mul"),
 	OUTBOX("outbox"),
 	RDI("rdi"),

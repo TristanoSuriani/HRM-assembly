@@ -19,6 +19,7 @@ import static nl.suriani.hrmasm.lib.parser.ParserRuleType.LABEL;
 public class Interpreter {
 	private CPU cpu;
 	private final static String LOG_TEMPLATE = "[%s] (%s) - %s";
+	private final static boolean LOG_DEBUG = false;
 
 	public void run(AST program) {
 		Map<String, Integer> labels = prefillLabels();
@@ -26,10 +27,7 @@ public class Interpreter {
 		prefillConstants();
 		while (cpu.hasNextInstruction() && cpu.getProgramState() != ProgramState.TERMINATED) {
 			var statement = getStatement();
-			System.out.println(String.format(LOG_TEMPLATE,
-					cpu.getProgramCounter(),
-					cpu.getCache(),
-					statement.getOriginalStatement().reconstruct()));
+			logDebug(statement);
 			switch (statement.getType()) {
 				case CONSTANT_DEFINITION:
 				case EMPTY:
@@ -49,6 +47,15 @@ public class Interpreter {
 					throw new UnsupportedOperationException();
 			}
 			cpu.updateCycles();
+		}
+	}
+
+	private void logDebug(ParsedStatement statement) {
+		if (LOG_DEBUG) {
+			System.out.println(String.format(LOG_TEMPLATE,
+					cpu.getProgramCounter(),
+					cpu.getCache(),
+					statement.getOriginalStatement().reconstruct()));
 		}
 	}
 
@@ -105,15 +112,28 @@ public class Interpreter {
 				handleCopytoStar(statement, aliases);
 				break;
 
+			case DIV:
+				handleDiv(statement, aliases);
+				break;
+
 			case EQ:
 				handleEq(statement, aliases);
+				break;
 
 			case INBOX:
 				handleInbox();
 				break;
 
+			case MOD:
+				handleMod(statement, aliases);
+				break;
+
 			case MOV:
 				handleMov(statement, aliases);
+				break;
+
+			case MUL:
+				handleMul(statement, aliases);
 				break;
 
 			case OUTBOX:
@@ -226,6 +246,13 @@ public class Interpreter {
 		cpu.setToRegister(value, cpu.getCache());
 	}
 
+	private void handleDiv(ParsedStatement statement, Map<String, Integer> aliases) {
+		var registerNumber = getRegisterNumber(statement, aliases);
+		var value = Integer.parseInt(cpu.getFromRegister(registerNumber));
+		int cacheValue = Integer.parseInt(cpu.getCache());
+		cpu.setCache("" + (value / cacheValue));
+	}
+
 	private void handleEq(ParsedStatement statement, Map<String, Integer> aliases) {
 		var registerNumber = getRegisterNumber(statement, aliases);
 		var value = cpu.getFromRegister(registerNumber);
@@ -286,6 +313,13 @@ public class Interpreter {
 		}
 	}
 
+	private void handleMod(ParsedStatement statement, Map<String, Integer> aliases) {
+		var registerNumber = getRegisterNumber(statement, aliases);
+		var value = Integer.parseInt(cpu.getFromRegister(registerNumber));
+		int cacheValue = Integer.parseInt(cpu.getCache());
+		cpu.setCache("" + (value % cacheValue));
+	}
+
 	private void handleMov(ParsedStatement statement, Map<String, Integer> aliases) {
 		var to = extractTo(statement);
 		var from = getFirstParameter(statement).getText()
@@ -301,6 +335,13 @@ public class Interpreter {
 			}
 			cpu.setCache(value);
 		}
+	}
+
+	private void handleMul(ParsedStatement statement, Map<String, Integer> aliases) {
+		var registerNumber = getRegisterNumber(statement, aliases);
+		var value = Integer.parseInt(cpu.getFromRegister(registerNumber));
+		int cacheValue = Integer.parseInt(cpu.getCache());
+		cpu.setCache("" + (value * cacheValue));
 	}
 
 	private String extractTo(ParsedStatement statement) {
@@ -339,7 +380,7 @@ public class Interpreter {
 			var value = cpu.readInbox();
 			cpu.setCache(value);
 		} else if (systemProgram.equals("puts")) {
-			System.out.println(rdi);
+			System.out.print(rdi.replaceAll("\\\\n", "\n"));
 		}
 	}
 

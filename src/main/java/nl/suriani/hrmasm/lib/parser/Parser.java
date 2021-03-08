@@ -14,9 +14,8 @@ public class Parser {
 
 	public Parser() {
 		var aliasDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(ALIAS), type(ALIAS_REFERENCE), type(INTEGER));
-		var addIntegerDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(ADD), type(INTEGER));
-		var addIntegerWithAliasDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(ADD), type(ALIAS_REFERENCE));
-		var addCharDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(ADD), type(CHAR));
+		var addDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(ADD), type(INTEGER));
+		var addWithAliasDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(ADD), type(ALIAS_REFERENCE));
 		var bumpMinDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(BUMP_MIN), type(INTEGER));
 		var bumpMinWithAliasDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(BUMP_MIN), type(ALIAS_REFERENCE));
 		var bumpPlusDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(BUMP_PLUS), type(INTEGER));
@@ -31,6 +30,8 @@ public class Parser {
 		var copytoWithAliasDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(COPYTO), type(ALIAS_REFERENCE));
 		var eqDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(EQ), type(ALIAS_REFERENCE));
 		var dbDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(DB), type(STRING));
+		var divDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(DIV), type(INTEGER));
+		var divWithAliasDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(DIV), type(ALIAS_REFERENCE));
 		var emptyLineDefinition = new ParserRule(ParserRuleType.EMPTY);
 		var inboxDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(INBOX));
 		var jumpDefinition = new ParserRule(ParserRuleType.JUMP, literal(JUMP), type(ID));
@@ -38,8 +39,12 @@ public class Parser {
 		var jumpnDefinition = new ParserRule(ParserRuleType.JUMP, literal(JUMPN), type(ID));
 		var labelDefinition = new ParserRule(ParserRuleType.LABEL, type(ID), literal(Literal.COLON));
 		var labeledConstantDefinition = new ParserRule(ParserRuleType.CONSTANT_DEFINITION, type(ID), literal(Literal.COLON), literal(DB), type(STRING));
+		var modDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(MOD), type(INTEGER));
+		var modWithAliasDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(MOD), type(ALIAS_REFERENCE));
 		var movDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(MOV), literal(RDI), literal(COMMA), type(ID));
 		var movWithAliasDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(MOV), literal(RDI), literal(COMMA), type(ALIAS_REFERENCE));
+		var mulDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(MUL), type(INTEGER));
+		var mulWithAliasDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(MUL), type(ALIAS_REFERENCE));
 		var outboxDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(OUTBOX));
 		var retDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(RET));
 		var retvDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(RETV));
@@ -50,9 +55,8 @@ public class Parser {
 		parserRules = Arrays.asList(
 				labelDefinition,
 				aliasDefinition,
-				addCharDefinition,
-				addIntegerDefinition,
-				addIntegerWithAliasDefinition,
+				addDefinition,
+				addWithAliasDefinition,
 				bumpMinDefinition,
 				bumpMinWithAliasDefinition,
 				bumpPlusDefinition,
@@ -66,6 +70,8 @@ public class Parser {
 				copytoStarDefinition,
 				copytoStarWithAliasDefinition,
 				dbDefinition,
+				divDefinition,
+				divWithAliasDefinition,
 				emptyLineDefinition,
 				eqDefinition,
 				jumpDefinition,
@@ -73,8 +79,12 @@ public class Parser {
 				jumpnDefinition,
 				inboxDefinition,
 				labeledConstantDefinition,
+				modDefinition,
+				modWithAliasDefinition,
 				movDefinition,
 				movWithAliasDefinition,
+				mulDefinition,
+				mulWithAliasDefinition,
 				outboxDefinition,
 				retDefinition,
 				retvDefinition,
