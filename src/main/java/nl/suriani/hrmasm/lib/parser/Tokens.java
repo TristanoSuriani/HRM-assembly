@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Program {
+public class Tokens {
 	private List<Statement> statements;
 
-	public Program() {
+	public Tokens() {
 		statements = new ArrayList<>();
 	}
 

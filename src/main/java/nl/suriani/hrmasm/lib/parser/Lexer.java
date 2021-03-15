@@ -3,8 +3,8 @@ package nl.suriani.hrmasm.lib.parser;
 import java.util.Optional;
 
 public class Lexer {
-	public Program tokenize(String source) {
-		final Program program = new Program();
+	public Tokens tokenize(String source) {
+		final Tokens tokens = new Tokens();
 		int lineCounter = 0;
 		Statement currentStatement = new Statement(lineCounter);
 		String currentSelection = newToken();
@@ -15,7 +15,7 @@ public class Lexer {
 			if (isNewLineCharacter(c)) {
 				ignoreTheRestOfTheLine = false;
 				currentSelection = pushCurrentSelectionAndClear(currentStatement, currentSelection);
-				currentStatement = pushCurrentStatementAndClear(program, currentStatement);
+				currentStatement = pushCurrentStatementAndClear(tokens, currentStatement);
 				continue;
 			} else if (isCommentCharacter(c)) {
 				ignoreTheRestOfTheLine = true;
@@ -48,7 +48,7 @@ public class Lexer {
 			}
 		}
 
-		return program;
+		return tokens;
 	}
 
 	private String pushCurrentSelectionAndClear(Statement statement, String currentSelection) {
@@ -60,8 +60,8 @@ public class Lexer {
 		return currentSelection;
 	}
 
-	private Statement pushCurrentStatementAndClear(Program program, Statement statement) {
-		program.addStatement(statement);
+	private Statement pushCurrentStatementAndClear(Tokens tokens, Statement statement) {
+		tokens.addStatement(statement);
 		return new Statement(statement.getLine() + 1);
 	}
 

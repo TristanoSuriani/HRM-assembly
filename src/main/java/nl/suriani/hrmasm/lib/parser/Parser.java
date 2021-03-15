@@ -94,9 +94,9 @@ public class Parser {
 		);
 	}
 
-	public AST parse(Program program) {
+	public AST parse(Tokens tokens) {
 		var parsedProgram = new AST();
-		for (Statement statement : program.getStatements()) {
+		for (Statement statement : tokens.getStatements()) {
 			var parserRule = parserRules.stream()
 					.filter(rule -> rule.isSatisfiedBy(statement))
 					.map(rule -> parseStatement(statement, rule))
