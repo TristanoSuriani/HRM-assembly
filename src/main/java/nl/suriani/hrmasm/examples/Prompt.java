@@ -30,6 +30,6 @@ public class Prompt {
 		cpu.addToInbox("Hej do");
 
 		var interpreter = new Interpreter(cpu);
-		interpreter.run(ast);
+		interpreter.run();
 	}
 }

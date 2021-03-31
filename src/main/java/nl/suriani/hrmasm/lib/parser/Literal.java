@@ -14,22 +14,12 @@ public enum Literal {
 	COPYFROM_STAR("copyfrom*"),
 	COPYTO("copyto"),
 	COPYTO_STAR("copyto*"),
-	DB("db"),
-	DIV("div"),
-	EQ("eq"),
 	INBOX("inbox"),
 	JUMP("jump"),
 	JUMP0("jump0"),
 	JUMPN("jumpn"),
-	MOV("mov"),
-	MOD("mod"),
-	MUL("mul"),
 	OUTBOX("outbox"),
-	RDI("rdi"),
-	RET("ret"),
-	RETV("retv"),
-	SUB("sub"),
-	SYSCALL("syscall");
+	SUB("sub");
 
 	public final String text;
 

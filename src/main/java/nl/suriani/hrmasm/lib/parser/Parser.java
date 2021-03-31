@@ -28,29 +28,15 @@ public class Parser {
 		var copytoStarDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(COPYTO_STAR), type(INTEGER));
 		var copytoStarWithAliasDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(COPYTO_STAR), type(ALIAS_REFERENCE));
 		var copytoWithAliasDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(COPYTO), type(ALIAS_REFERENCE));
-		var eqDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(EQ), type(ALIAS_REFERENCE));
-		var dbDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(DB), type(STRING));
-		var divDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(DIV), type(INTEGER));
-		var divWithAliasDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(DIV), type(ALIAS_REFERENCE));
 		var emptyLineDefinition = new ParserRule(ParserRuleType.EMPTY);
 		var inboxDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(INBOX));
 		var jumpDefinition = new ParserRule(ParserRuleType.JUMP, literal(JUMP), type(ID));
 		var jump0Definition = new ParserRule(ParserRuleType.JUMP, literal(JUMP0), type(ID));
 		var jumpnDefinition = new ParserRule(ParserRuleType.JUMP, literal(JUMPN), type(ID));
 		var labelDefinition = new ParserRule(ParserRuleType.LABEL, type(ID), literal(Literal.COLON));
-		var labeledConstantDefinition = new ParserRule(ParserRuleType.CONSTANT_DEFINITION, type(ID), literal(Literal.COLON), literal(DB), type(STRING));
-		var modDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(MOD), type(INTEGER));
-		var modWithAliasDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(MOD), type(ALIAS_REFERENCE));
-		var movDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(MOV), literal(RDI), literal(COMMA), type(ID));
-		var movWithAliasDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(MOV), literal(RDI), literal(COMMA), type(ALIAS_REFERENCE));
-		var mulDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(MUL), type(INTEGER));
-		var mulWithAliasDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(MUL), type(ALIAS_REFERENCE));
 		var outboxDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(OUTBOX));
-		var retDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(RET));
-		var retvDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(RETV));
 		var subDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(SUB) , type(INTEGER));
 		var subWithAliasDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(SUB) , type(ALIAS_REFERENCE));
-		var syscallDefinition = new ParserRule(ParserRuleType.INSTRUCTION, literal(SYSCALL) , type(ID));
 
 		parserRules = Arrays.asList(
 				labelDefinition,
@@ -69,28 +55,14 @@ public class Parser {
 				copytoWithAliasDefinition,
 				copytoStarDefinition,
 				copytoStarWithAliasDefinition,
-				dbDefinition,
-				divDefinition,
-				divWithAliasDefinition,
 				emptyLineDefinition,
-				eqDefinition,
 				jumpDefinition,
 				jump0Definition,
 				jumpnDefinition,
 				inboxDefinition,
-				labeledConstantDefinition,
-				modDefinition,
-				modWithAliasDefinition,
-				movDefinition,
-				movWithAliasDefinition,
-				mulDefinition,
-				mulWithAliasDefinition,
 				outboxDefinition,
-				retDefinition,
-				retvDefinition,
 				subDefinition,
-				subWithAliasDefinition,
-				syscallDefinition
+				subWithAliasDefinition
 		);
 	}
 

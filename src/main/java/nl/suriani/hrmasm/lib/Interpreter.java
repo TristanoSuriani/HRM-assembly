@@ -1,7 +1,6 @@
 package nl.suriani.hrmasm.lib;
 
 import lombok.AllArgsConstructor;
-import nl.suriani.hrmasm.lib.parser.AST;
 import nl.suriani.hrmasm.lib.parser.Literal;
 import nl.suriani.hrmasm.lib.parser.ParsedStatement;
 import nl.suriani.hrmasm.lib.parser.Value;
@@ -17,11 +16,11 @@ import static nl.suriani.hrmasm.lib.parser.ParserRuleType.LABEL;
 
 @AllArgsConstructor
 public class Interpreter {
-	private CPU cpu;
+	private final CPU cpu;
 	private final static String LOG_TEMPLATE = "[%s] (%s) - %s";
 	private final static boolean LOG_DEBUG = false;
 
-	public void run(AST program) {
+	public void run() {
 		Map<String, Integer> labels = prefillLabels();
 		Map<String, Integer> aliases = new HashMap<>();
 		prefillConstants();
@@ -39,7 +38,7 @@ public class Interpreter {
 					break;
 
 				case INSTRUCTION:
-					handleInstruction(statement, labels, aliases);
+					handleInstruction(statement, aliases);
 					cpu.updateProgramCounter();
 					break;
 
@@ -76,7 +75,7 @@ public class Interpreter {
 		return labels;
 	}
 
-	private void handleInstruction(ParsedStatement statement, Map<String, Integer> labels, Map<String, Integer> aliases) {
+	private void handleInstruction(ParsedStatement statement, Map<String, Integer> aliases) {
 		var children = statement.getChildren();
 		var instruction = children.get(0);
 		switch (Literal.fromText(instruction.getText().get()).get()) {
@@ -112,49 +111,16 @@ public class Interpreter {
 				handleCopytoStar(statement, aliases);
 				break;
 
-			case DIV:
-				handleDiv(statement, aliases);
-				break;
-
-			case EQ:
-				handleEq(statement, aliases);
-				break;
-
 			case INBOX:
 				handleInbox();
-				break;
-
-			case MOD:
-				handleMod(statement, aliases);
-				break;
-
-			case MOV:
-				handleMov(statement, aliases);
-				break;
-
-			case MUL:
-				handleMul(statement, aliases);
 				break;
 
 			case OUTBOX:
 				handleOutbox();
 				break;
 
-			case RET:
-				cpu.setProgramState(ProgramState.TERMINATED);
-				break;
-
-			case RETV:
-				cpu.setProgramState(ProgramState.TERMINATED);
-				cpu.setRDI(cpu.getCache());
-				break;
-
 			case SUB:
 				handleSub(statement, aliases);
-				break;
-
-			case SYSCALL:
-				handleSyscall(statement);
 				break;
 
 			default:
@@ -173,26 +139,6 @@ public class Interpreter {
 				.skip(1)
 				.findFirst()
 				.orElseThrow(() -> new IllegalStateException("Missing argument"));
-	}
-
-	private Value getLiteralFirstParameter(ParsedStatement statement) {
-		return getAllLiteralChildren(statement).stream()
-				.skip(1)
-				.findFirst()
-				.orElseThrow(() -> new IllegalStateException("Missing argument"));
-	}
-
-	private Value getLiteralSecondParameter(ParsedStatement statement) {
-		return getAllLiteralChildren(statement).stream()
-				.skip(2)
-				.findFirst()
-				.orElseThrow(() -> new IllegalStateException("Missing argument"));
-	}
-
-	private List<Value> getAllLiteralChildren(ParsedStatement statement) {
-		return statement.getChildren().stream()
-				.filter(value -> value.getType() == ValueType.LITERAL)
-				.collect(Collectors.toList());
 	}
 
 	private List<Value> getAllNonLiteralChildren(ParsedStatement statement) {
@@ -251,23 +197,6 @@ public class Interpreter {
 		cpu.setToRegister(value, cpu.getCache());
 	}
 
-	private void handleDiv(ParsedStatement statement, Map<String, Integer> aliases) {
-		var registerNumber = getRegisterNumber(statement, aliases);
-		var value = Integer.parseInt(cpu.getFromRegister(registerNumber));
-		int cacheValue = Integer.parseInt(cpu.getCache());
-		cpu.setCache("" + (value / cacheValue));
-	}
-
-	private void handleEq(ParsedStatement statement, Map<String, Integer> aliases) {
-		var registerNumber = getRegisterNumber(statement, aliases);
-		var value = cpu.getFromRegister(registerNumber);
-		if (value.equals(cpu.getCache())) {
-			cpu.setCache("0");
-		} else {
-			cpu.setCache("-1");
-		}
-	}
-
 	private void handleInbox() {
 		cpu.setCache(cpu.readInbox());
 	}
@@ -318,47 +247,6 @@ public class Interpreter {
 		}
 	}
 
-	private void handleMod(ParsedStatement statement, Map<String, Integer> aliases) {
-		var registerNumber = getRegisterNumber(statement, aliases);
-		var value = Integer.parseInt(cpu.getFromRegister(registerNumber));
-		int cacheValue = Integer.parseInt(cpu.getCache());
-		cpu.setCache("" + (value % cacheValue));
-	}
-
-	private void handleMov(ParsedStatement statement, Map<String, Integer> aliases) {
-		var to = extractTo(statement);
-		var from = getFirstParameter(statement).getText()
-				.orElseThrow(() -> new IllegalStateException("Missing text"));
-		if (to.equals(Literal.RDI.getText())) {
-			var value = cpu.getFromMemory(from);
-			if (value == null) {
-				var registerNumber = aliases.get(from);
-				value = cpu.getFromRegister(registerNumber);
-				cpu.setRDI(value);
-			} else {
-				cpu.setRDI(value);
-			}
-			cpu.setCache(value);
-		}
-	}
-
-	private void handleMul(ParsedStatement statement, Map<String, Integer> aliases) {
-		var registerNumber = getRegisterNumber(statement, aliases);
-		var value = Integer.parseInt(cpu.getFromRegister(registerNumber));
-		int cacheValue = Integer.parseInt(cpu.getCache());
-		cpu.setCache("" + (value * cacheValue));
-	}
-
-	private String extractTo(ParsedStatement statement) {
-		try {
-			return getLiteralFirstParameter(statement).getText()
-					.orElseThrow(() -> new IllegalStateException("Missing text"));
-		} catch (IllegalStateException illegalStateException) {
-			return getFirstParameter(statement).getText()
-					.orElseThrow(() -> new IllegalStateException("Missing text"));
-		}
-	}
-
 	private void handleOutbox() {
 		cpu.addToOutbox(cpu.getCache());
 		cpu.setCache(null);
@@ -375,17 +263,6 @@ public class Interpreter {
 			var value = Integer.parseInt(cpu.getFromRegister(registerNumber));
 			int cacheValue = Integer.parseInt(cpu.getCache());
 			cpu.setCache("" + (cacheValue - value));
-		}
-	}
-
-	private void handleSyscall(ParsedStatement statement) {
-		var systemProgram = getFirstParameter(statement).getText().get();
-		var rdi = cpu.getRDI();
-		if (systemProgram.equals("gets")) {
-			var value = cpu.readInbox();
-			cpu.setCache(value);
-		} else if (systemProgram.equals("puts")) {
-			System.out.print(rdi.replaceAll("\\\\n", "\n"));
 		}
 	}
 

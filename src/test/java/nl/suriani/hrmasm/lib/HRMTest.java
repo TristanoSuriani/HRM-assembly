@@ -117,7 +117,7 @@ class HRMTest {
 		var parser = new Parser();
 		var program = parser.parse(lexer.tokenize(source));
 		cpu.setProgram(program);
-		interpreter.run(program);
+		interpreter.run();
 	}
 
 	private void testProgram(List<String> testLines) {
