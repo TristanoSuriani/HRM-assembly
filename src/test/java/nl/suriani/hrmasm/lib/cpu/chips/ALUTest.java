@@ -1,6 +1,5 @@
-package nl.suriani.hrmasm.lib.cpu;
+package nl.suriani.hrmasm.lib.cpu.chips;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +18,7 @@ class ALUTest {
 		short a = 5;
 		short b = 3;
 		alu.store(a, b);
-		Assertions.assertEquals(8, alu.loadSum());
-		Assertions.assertEquals(2, alu.loadSub());
+		assertEquals(8, alu.loadSum());
+		assertEquals(2, alu.loadSub());
 	}
 }

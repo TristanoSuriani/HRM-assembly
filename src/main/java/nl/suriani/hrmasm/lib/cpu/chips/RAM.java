@@ -1,4 +1,4 @@
-package nl.suriani.hrmasm.lib.cpu;
+package nl.suriani.hrmasm.lib.cpu.chips;
 
 public class RAM {
 	private final Register16Bit[] units;

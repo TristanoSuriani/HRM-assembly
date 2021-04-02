@@ -1,6 +1,5 @@
-package nl.suriani.hrmasm.lib.cpu;
+package nl.suriani.hrmasm.lib.cpu.chips;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,9 +20,9 @@ class StackUnitTest {
 		stackUnit.push((short) 2);
 		stackUnit.push((short) 3);
 
-		Assertions.assertEquals(3, stackUnit.pop());
-		Assertions.assertEquals(2, stackUnit.pop());
-		Assertions.assertEquals(1, stackUnit.pop());
-		Assertions.assertEquals(0, stackUnit.pop());
+		assertEquals(3, stackUnit.pop());
+		assertEquals(2, stackUnit.pop());
+		assertEquals(1, stackUnit.pop());
+		assertEquals(0, stackUnit.pop());
 	}
 }

@@ -1,6 +1,5 @@
-package nl.suriani.hrmasm.lib.cpu;
+package nl.suriani.hrmasm.lib.cpu.chips;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +19,7 @@ class RAMTest {
 		ram.store((short) 0, (short) 1);
 		ram.store((short) 1, (short) 2);
 
-		Assertions.assertEquals(1, ram.load((short) 0));
-		Assertions.assertEquals(2, ram.load((short) 1));
+		assertEquals(1, ram.load((short) 0));
+		assertEquals(2, ram.load((short) 1));
 	}
 }

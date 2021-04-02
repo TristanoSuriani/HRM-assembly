@@ -23,19 +23,3 @@ Implementation of the assembly of the game Human Resources Machine. It is not su
 | outbox           | outbox     | pushes a value to the outbox |
 | sub           | sub [Rn]      | Subtracts register value from cache value and sets to the cache |
 
-
-### Extended HRM CPU
-![png](src/main/resources/docs/ehrmcpu.png)
-
-#### Additional instructions
-| Instruction   | syntax | explanation |
-|-------------  |--------|-------------|
-| db           | [label]: db "some string..."     | Defines a constant to put in memory with a key corresponding to the label |
-| div           | div [Rn]      | Divides register value from cache value and sets to the cache |
-| eq            | eq [Rn]       | Checks if cache value is equal to register value and sets 0 if true and -1 if false |
-| mod           | mov [Rn], [value] / mod [Rn] | Like div, but saves the rest of the division to the cache |
-| mov           | mov [Rn], [value] / mov [RDI], [value] | Copies a value to a register and saves it to the cache |
-| mul           | mul [Rn]      | Multiplies cache value to register value and sets to the cache |
-| ret           | ret      | Stops program execution without value |
-| retv          | retv      | Stops program execution with value (saved in RDI) |
-| syscall       | syscall "some system program..." | Allows to call a system program. If a parameter is used it must be set to RDI. The return value is set to the cache |

@@ -1,4 +1,4 @@
-package nl.suriani.hrmasm.lib.cpu;
+package nl.suriani.hrmasm.lib.cpu.chips;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +19,7 @@ class ROMTest {
 		short[] instructions = new short[] { 1, 2, 3, 4 };
 		rom.flash(instructions);
 
-		Assertions.assertEquals(1, rom.load((short) 0));
-		Assertions.assertEquals(2, rom.load((short) 1));
+		assertEquals(1, rom.load((short) 0));
+		assertEquals(2, rom.load((short) 1));
 	}
 }

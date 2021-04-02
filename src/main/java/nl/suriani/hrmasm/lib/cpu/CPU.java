@@ -1,53 +1,80 @@
 package nl.suriani.hrmasm.lib.cpu;
 
+import nl.suriani.hrmasm.lib.cpu.chips.ALU;
+import nl.suriani.hrmasm.lib.cpu.chips.Clock;
+import nl.suriani.hrmasm.lib.cpu.chips.BoxController;
+import nl.suriani.hrmasm.lib.cpu.chips.RAM;
+import nl.suriani.hrmasm.lib.cpu.chips.ROM;
+import nl.suriani.hrmasm.lib.cpu.chips.Register16Bit;
+import nl.suriani.hrmasm.lib.cpu.chips.Register2Bit;
+
 public class CPU {
-	private final ALU alu;
-	private final Clock clock;
-	private final RAM ram;
-	private final ROM rom;
-	private final Register16Bit dRegister;
-	private final Register16Bit mRegister;
-	private final Register16Bit pcRegister;
-	private final StackUnit inbox;
-	private final OutboxController outbox;
-	private final Register2Bit sRegister;
+	final ALU alu;
+	final Clock clock;
+	final RAM ram;
+	final ROM rom;
+	final Register16Bit aRegister;
+	final Register16Bit dRegister;
+	final Register16Bit mRegister;
+	final Register16Bit pcRegister;
+	final BoxController inbox;
+	final BoxController outbox;
+	final Register2Bit sRegister;
 
-	private static final short CLOCK_SPEED = 				16738;
-	private static final short RAM_SIZE = 					16738;
-	private static final short ROM_SIZE = 					4096;
-	private static final short INBOX_SIZE = 				64;
-	private static final short OUTBOX_SIZE = 				64;
-	private static final short INBOX_OFFSET = 				14000;
-	private static final short OUTBOX_OFFSET = INBOX_OFFSET + INBOX_SIZE;
+	static final short CLOCK_SPEED = 				16738;
+	static final short RAM_SIZE = 					16738;
+	static final short ROM_SIZE = 					4096;
+	static final short INBOX_SIZE = 				64;
+	static final short OUTBOX_SIZE = 				64;
 
-	private static final short OFF_STATE = 					0b00;
-	private static final short PAUSED_STATE = 				0b01;
-	private static final short RUNNING_STATE = 				0b10;
-	private static final short HALTED_STATE = 				0b11;
+	static final short INBOX_OFFSET = 						14000;
+	static final short OUTBOX_OFFSET = 						INBOX_OFFSET + INBOX_SIZE;
 
-	public static final short AC_BIT_MASK = (short) 		0b1_000000_0000_00000;
-	public static final short OPCODE_BITS_MASK =			0b0_000000_1111_00000;
-	public static final short ADDRESS_BITS_MASK = 			0b0_000000_0000_11111;
-	public static final short DATA_BITS_MASK = 				0b0_111111_1111_11111;
-	public static final short AC_BIT_SHIFT = 				15;
-	public static final short OPCODE_BITS_SHIFT = 			5;
+	static final short OFF_STATE = 					0b00;
+	static final short PAUSED_STATE = 				0b01;
+	static final short RUNNING_STATE = 				0b10;
+	static final short HALTED_STATE = 				0b11;
+
+	public static final short A_BIT 	= 0b1;
+	public static final short BC_BIT 	= 0b0;
+	public static final short B_BIT 	= 0b0;
+	public static final short C_BIT 	= 0b1;
+
+	public static final short A_BC_BIT_MASK = (short) 		0b1_0_0000_0000000000;
+	public static final short B_C_BIT_MASK =  				0b0_1_0000_0000000000;
+	public static final short JUMP_BITS_MASK =  			0b0_0_11_000000000000;
+	public static final short LINE_BITS_MASK =				0b0_0_00_111111111111;
+	public static final short OPCODE_BITS_MASK =			0b0_0_1111_0000000000;
+	public static final short ADDRESS_BITS_MASK = 			0b0_0_0000_1111111111;
+	public static final short DATA_BITS_MASK = 				0b0_111111111111111;
+
+	public static final short A_BC_BIT_SHIFT = 				15;
+	public static final short B_C_BIT_SHIFT = 				14;
+	public static final short JUMP_BITS_SHIFT = 			12;
+	public static final short LINE_BITS_SHIFT = 			0;
+	public static final short OPCODE_BITS_SHIFT = 			10;
 	public static final short ADDRESS_BITS_SHIFT = 			0;
 	public static final short DATA_BITS_SHIFT = 			0;
+
+	public static final short JUMP_CODE =	 				0x0;
+	public static final short JUMP0_CODE = 					0x1;
+	public static final short JUMPN_CODE = 					0x2;
+	public static final short JUMPP_CODE = 					0x3;
 
 	public static final short NOOP_OPCODE = 				0x0;
 	public static final short INBOX_OPCODE = 				0x1;
 	public static final short OUTBOX_OPCODE = 				0x2;
-	public static final short JUMP_OPCODE = 				0x3;
-	public static final short JUMP0_OPCODE = 				0x4;
-	public static final short JUMPN_OPCODE = 				0x5;
-	public static final short COPYFROM_OPCODE = 			0x6;
-	public static final short COPYTO_OPCODE = 				0x7;
-	public static final short COPYFROM_STAR_OPCODE = 		0x8;
-	public static final short COPYTO_STAR_OPCODE = 			0x9;
-	public static final short BUMP_PLUS_OPCODE = 			0xa;
-	public static final short BUMP_MIN_OPCODE = 			0xb;
-	public static final short ADD_OPCODE = 					0xc;
-	public static final short SUB_OPCODE = 					0xd;
+	public static final short COPYFROM_OPCODE = 			0x3;
+	public static final short COPYTO_OPCODE = 				0x4;
+	public static final short COPYFROM_STAR_OPCODE = 		0x5;
+	public static final short COPYTO_STAR_OPCODE = 			0x6;
+	public static final short BUMP_PLUS_OPCODE = 			0x7;
+	public static final short BUMP_MIN_OPCODE = 			0x8;
+	public static final short ADD_OPCODE = 					0x9;
+	public static final short SUB_OPCODE = 					0xa;
+	public static final short MUL_OPCODE = 					0xb;
+	public static final short DIV_OPCODE = 					0xc;
+	public static final short MOD_OPCODE = 					0xd;
 	public static final short PAUSE_OPCODE = 				0xe;
 	public static final short HALT_OPCODE = 				0xf;
 
@@ -56,11 +83,12 @@ public class CPU {
 		clock = new Clock(CLOCK_SPEED);
 		ram = new RAM(RAM_SIZE);
 		rom = new ROM(ROM_SIZE);
+		aRegister = new Register16Bit();
 		dRegister = new Register16Bit();
 		mRegister = new Register16Bit();
 		pcRegister = new Register16Bit();
-		inbox = new StackUnit(INBOX_SIZE);
-		outbox = new OutboxController(OUTBOX_SIZE, OUTBOX_OFFSET);
+		inbox = new BoxController(INBOX_SIZE, INBOX_OFFSET);
+		outbox = new BoxController(OUTBOX_SIZE, OUTBOX_OFFSET);
 		sRegister = new Register2Bit();
 	}
 
@@ -102,7 +130,7 @@ public class CPU {
 				break;
 
 			case INBOX_OPCODE:
-				dRegister.store(inbox.pop());
+				dRegister.store(inbox.read(ram));
 				incrementPcRegister();
 				break;
 
@@ -110,25 +138,6 @@ public class CPU {
 				dRegister.reset();
 				outbox.read(ram);
 				incrementPcRegister();
-				break;
-
-			case JUMP_OPCODE:
-				// TODO define
-				// pcRegister.load(...)
-				break;
-
-			case JUMP0_OPCODE:
-				if (dRegister.load() == 0) {
-					// TODO define
-					// pcRegister.load(...)
-				}
-				break;
-
-			case JUMPN_OPCODE:
-				if (dRegister.load() < 0) {
-					// TODO define
-					// pcRegister.load(...)
-				}
 				break;
 
 			case COPYFROM_OPCODE:
@@ -206,7 +215,7 @@ public class CPU {
 	}
 
 	private short getAcBit(short instruction) {
-		return extractBits(instruction, AC_BIT_MASK, AC_BIT_SHIFT);
+		return extractBits(instruction, A_BC_BIT_MASK, A_BC_BIT_SHIFT);
 	}
 
 	private short getData(short instruction) {
