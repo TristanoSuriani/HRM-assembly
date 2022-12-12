@@ -1,0 +1,121 @@
+@startuml
+
+title Class Diagram HRMCPU
+
+class Register {
+  -value (1..1)
+}
+
+class Registers {
+  -registers(32..32)
+}
+
+class Inbox {
+  -deque (1..1)
+}
+
+class Stack {
+  -deque (1..1)
+}
+
+class Outbox
+{
+  -deque (1..1)
+}
+
+class ALU {
+  -Value a (1..1)
+  -Value b (1..1)
+
+  +loadA(Value a)
+  +loadB(Value b)
+
+  +execute(): Value c
+}
+
+class Memory {
+  -cells (65536..65536)
+}
+
+class MemoryCell {
+ -value (1..1)
+}
+
+class Value {
+  -value (1..1)
+  +getNumber()
+  +getCharachter()
+}
+
+class Deque<Value> {
+  -values (0..n)
+}
+
+class CPU {
+  -status (1..1)
+  -registers (1..1)
+  -mRegister (1..1)
+  -programCounter (1..1)
+  -inbox (1..1)
+  -outbox (1..1)
+  -stack0 (1..1)
+  -stack1 (1..1)
+  -stack2 (1..1)
+  -stack3 (1..1)
+  -stack4 (1..1)
+  -stack5 (1..1)
+  -stack6 (1..1)
+  -stack7 (1..1)
+  -alu (1..1)
+
+  +reset(): CPU
+  +load(program): CPU
+  +execute(): CPU
+  +step(): CPU
+  +store(memoryAddress, value): CPU
+  +fetch(memoryAddress) : Value
+  +move(registerIdx, value): CPU
+}
+
+enum CPUStatus {
+  READY, BUSY, PAUSED, HALTED
+}
+
+class Program {
+  -statements (0..n)
+}
+
+class Statement {
+  -type (1..1)
+  -param1 (0..1)
+  -param2 (0..1)
+  -param3 (0..1)
+}
+
+interface Assembler {
+  +assemble(programAsText): Program
+}
+
+CPU -down-> Registers
+CPU -down-> Register
+CPU -down-> Inbox
+CPU -down-> Outbox
+CPU -right-> ALU
+CPU -down-> Memory
+CPU -down-> Stack
+CPU -down-> Program
+CPU -left-> CPUStatus
+Memory -down-> MemoryCell
+Registers -down-> Register
+MemoryCell -down-> Value
+Register -down-> Value
+Inbox -down-> Deque
+Outbox -down-> Deque
+Stack -down-> Deque
+ALU -down-> Value
+Deque -down-> Value
+Program -down-> Statement
+Statement -down-> Value
+Assembler .down.> Program
+
+@enduml

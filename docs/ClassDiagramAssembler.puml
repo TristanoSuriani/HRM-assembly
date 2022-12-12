@@ -1,0 +1,127 @@
+@startuml
+
+title Class Diagram HRMCPU
+
+class Value {
+  -value (1..1)
+  +getNumber()
+  +getCharachter()
+}
+
+
+class Program {
+  -statements (0..n)
+}
+
+class Statement {
+  -type (1..1)
+  -param1 (0..1)
+  -param2 (0..1)
+  -param3 (0..1)
+}
+
+
+class StandardAssembler {
+  -lexer (1..1)
+  -parser (1..1)
+  -macroPreprocessor (1..1)
+}
+
+class Lexer {
+  +lex(programAsText): List<Token>
+}
+
+class Token {
+  -lineNumber (1..1)
+  -originalLineNumber (1..1)
+  -type (1..1)
+  -String value (1..1)
+}
+
+class LineNumber {
+}
+
+enum TokenType {
+  ADD
+  ALIAS
+  BUMP_NEGATIVE
+  BUMP_POSITIVE
+  COPY_FROM
+  COPY_FROM_INDIRECT_ACCESS
+  COPY_TO
+  COPY_TO_INDIRECT_ACCESS
+  DECREMENT
+  END_OF_MACRO_DECLARATION
+  END_OF_LINE
+  IDENTIFIER
+  INBOX
+  INCREMENT
+  JUMP
+  JUMP_IF_ZERO
+  JUMP_IF_NEGATIVE
+  JUMP_IF_POSITIVE
+  LABEL
+  MACRO_DECLARATION
+  MACRO_EXPANSION
+  MOV
+  OUTBOX
+  SUB
+  WORD
+}
+
+class Parser {
+  -rules (1..1)
+}
+
+class ParserRules {
+  -rules (0..n)
+  +match(parsedStatement): Optional<Statement>
+}
+
+class ParserRule {
+  +match(Predicate<ParsedStatement> test)
+}
+
+class ParsedStatement {
+  -tokens(1..n)
+}
+
+class SymbolTable {
+  -Map<String, Integer> aliases
+  -Map<String, Integer> symbols
+
+  +put(key, value)
+  +get(key): String
+}
+
+class MacroPreprocessor {
+  -Map<String, List<ParsedStatement>> macros
+
+  +expand(macroName): List<ParsedStatement>
+
+}
+
+class Macro {
+  -name
+  -parameters
+}
+
+Assembler .down.> Program
+StandardAssembler .down|> Assembler
+Program -down-> Statement
+Statement -down-> Value
+StandardAssembler -down-> Lexer
+StandardAssembler -down-> Parser
+
+Lexer -down-> Token
+Token -left-> TokenType
+Token -down-> LineNumber
+
+Parser -down-> ParserRules
+Parser -down-> SymbolTable
+ParserRules -down-> ParserRule
+ParserRules .down.> ParsedStatement
+ParserRules .down.> Statement
+ParserRule .down.> ParsedStatement
+
+@enduml

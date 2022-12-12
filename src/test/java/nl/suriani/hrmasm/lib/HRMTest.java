@@ -1,29 +1,8 @@
 package nl.suriani.hrmasm.lib;
 
-import lombok.SneakyThrows;
-import nl.suriani.hrmasm.lib.parser.Lexer;
-import nl.suriani.hrmasm.lib.parser.Literal;
-import nl.suriani.hrmasm.lib.parser.Parser;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class HRMTest {
-
+/*
 	public static final String SOURCE_DIRECTORY = "src/test/asm/nl/suriani/hrmasm/app/";
 	private CPU cpu;
 	private Interpreter interpreter;
@@ -140,5 +119,5 @@ class HRMTest {
 				return;
 			}
 		}
-	}
+	}*/
 }
