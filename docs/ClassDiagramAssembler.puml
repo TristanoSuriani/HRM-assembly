@@ -1,7 +1,5 @@
 @startuml
 
-title Class Diagram HRMCPU
-
 class Value {
   -value (1..1)
   +getNumber()
@@ -24,7 +22,6 @@ class Statement {
 class StandardAssembler {
   -lexer (1..1)
   -parser (1..1)
-  -macroPreprocessor (1..1)
 }
 
 class Lexer {
@@ -39,6 +36,7 @@ class Token {
 }
 
 class LineNumber {
+  int value (1.1)
 }
 
 enum TokenType {
@@ -71,6 +69,8 @@ enum TokenType {
 
 class Parser {
   -rules (1..1)
+  -symbolTable (1..1)
+  -macroPreprocessor (1..1)
 }
 
 class ParserRules {
@@ -98,12 +98,6 @@ class MacroPreprocessor {
   -Map<String, List<ParsedStatement>> macros
 
   +expand(macroName): List<ParsedStatement>
-
-}
-
-class Macro {
-  -name
-  -parameters
 }
 
 Assembler .down.> Program
@@ -119,6 +113,7 @@ Token -down-> LineNumber
 
 Parser -down-> ParserRules
 Parser -down-> SymbolTable
+Parser -down-> MacroPreprocessor
 ParserRules -down-> ParserRule
 ParserRules .down.> ParsedStatement
 ParserRules .down.> Statement

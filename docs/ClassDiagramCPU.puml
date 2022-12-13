@@ -1,7 +1,5 @@
 @startuml
 
-title Class Diagram HRMCPU
-
 class Register {
   -value (1..1)
 }
