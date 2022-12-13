@@ -22,14 +22,14 @@ class Stacks {
   -stack (8..8)
 
   +push(idx, value)
-  +pop(idx)
+  +pop(idx): Optional<Value>
 }
 
 class Stack {
   -deque (1..1)
 
   +push(value)
-  +pop(): Value
+  +pop(): Optional<Value>
 }
 
 class Outbox

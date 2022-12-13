@@ -13,28 +13,12 @@ public class Memory {
     }
 
     public Value fetch(int address) {
-        checkCanFetch(address);
+        Indexes.checkCanFetch(address, SIZE);
         return memoryCells[address].fetch();
     }
 
     public void store(int address, Value value) {
-        checkCanStore(address);
+        Indexes.checkCanStore(address, SIZE);
         memoryCells[address].store(value);
-    }
-
-    private void checkCanFetch(int address) {
-        if (isAddressOutOfBound(address)) {
-            throw new CannotFetchException();
-        }
-    }
-
-    private void checkCanStore(int address) {
-        if (isAddressOutOfBound(address)) {
-            throw new CannotStoreException();
-        }
-    }
-
-    private boolean isAddressOutOfBound(int address) {
-        return address < 0 || address >= SIZE;
     }
 }

@@ -13,28 +13,12 @@ public class Registers {
     }
 
     public Value fetch(int idx) {
-        checkCanFetch(idx);
+        Indexes.checkCanFetch(idx, SIZE);
         return registers[idx].fetch();
     }
 
     public void store(int idx, Value value) {
-        checkCanStore(idx);
+        Indexes.checkCanStore(idx, SIZE);
         registers[idx].store(value);
-    }
-
-    private void checkCanFetch(int idx) {
-        if (isIndexOutOfBound(idx)) {
-            throw new CannotFetchException();
-        }
-    }
-
-    private void checkCanStore(int idx) {
-        if (isIndexOutOfBound(idx)) {
-            throw new CannotStoreException();
-        }
-    }
-
-    private boolean isIndexOutOfBound(int idx) {
-        return idx < 0 || idx >= SIZE;
     }
 }

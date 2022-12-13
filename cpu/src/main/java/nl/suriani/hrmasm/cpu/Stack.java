@@ -3,9 +3,10 @@ package nl.suriani.hrmasm.cpu;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
+import java.util.Optional;
 
 public class Stack {
-    private Deque<Value> deque;
+    private final Deque<Value> deque;
 
     public Stack() {
         deque = new ArrayDeque<>();
@@ -15,8 +16,11 @@ public class Stack {
         deque.push(value);
     }
 
-    public void pop() {
-        deque.pop();
+    public Optional<Value> pop() {
+        if (deque.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(deque.pop());
     }
 
     List<Value> debug() {
