@@ -1,117 +1,114 @@
 @startuml
 
 class Register {
-  -value (1..1)
+  -Value value (1..1)
 
   +fetch(): Value
-   +store(value)
+  +store(Value value)
+}
+
+class ProgramCounter {
 }
 
 class Registers {
-  -registers(32..32)
+  -Register[] registers(32..32)
 
   +fetch(int idx): Value
   +store(int idx, Value value)
 }
 
 class Inbox {
-  -stack (1..1)
+  -Stack stack (1..1)
 }
 
 class Stacks {
-  -stack (8..8)
+  -Stack[] stack (8..8)
 
-  +push(idx, value)
-  +pop(idx): Optional<Value>
+  +push(int idx, Value value)
+  +pop(int idx): Optional<Value>
 }
 
 class Stack {
-  -deque (1..1)
+  -Deque<Value> deque (1..1)
 
-  +push(value)
+  +push(Value value)
   +pop(): Optional<Value>
 }
 
 class Outbox
 {
-  -stack (1..1)
+  -Stack stack (1..1)
 }
 
 class ALU {
   -Value a (1..1)
   -Value b (1..1)
-  -operation (1..1)
 
-  +loadA(Value a)
-  +loadB(Value b)
+  +storeA(Value a)
+  +storeB(Value b)
 
-  +execute(): Value
-}
-
-enum ArithmeticOperation {
-  SUM
-  SUBTRACTION
+  +add(): Value
+  +subtract(): Value
 }
 
 class Memory {
-  -cells (65536..65536)
+  -MemoryCell[] cells (65536..65536)
 
   +fetch(int address): Value
   +store(int address, Value value)
 }
 
 class MemoryCell {
- -value (1..1)
+ -Value value (1..1)
 
  +fetch(): Value
- +store(value)
+ +store(Value value)
 }
 
 class Value {
-  -value (1..1)
-  +asNumber()
-  +asCharachter()
+  -int value (1..1)
+
+  +asNumber(): int
+  +asCharachter(): char
+  +increment(): Value
+  +decrement(): Value
+  +plus(Value value): Value
+  +minus(Value value): Value
 }
 
 class CPU {
-  -status (1..1)
-  -registers (1..1)
-  -mRegister (1..1)
-  -programCounter (1..1)
-  -inbox (1..1)
-  -outbox (1..1)
-  -stack0 (1..1)
-  -stack1 (1..1)
-  -stack2 (1..1)
-  -stack3 (1..1)
-  -stack4 (1..1)
-  -stack5 (1..1)
-  -stack6 (1..1)
-  -stack7 (1..1)
-  -alu (1..1)
+  -CPUStatus status (1..1)
+  -Registers registers (1..1)
+  -Register mRegister (1..1)
+  -ProgramCounter programCounter (1..1)
+  -Inbox inbox (1..1)
+  -Outbox outbox (1..1)
+  -Stacks stacks (1..1)
+  -ALU alu (1..1)
+  -Program program (1..1)
 
   +reset(): CPU
-  +load(program): CPU
+  +load(Program program): CPU
   +execute(): CPU
   +step(): CPU
-  +store(memoryAddress, value): CPU
-  +fetch(memoryAddress) : Value
-  +move(idx, value): CPU
+
+  -storeInMemory(int memoryAddress, Value value): CPU
+  -fetchFromMemory(int memoryAddress) : Value
+  -storeInRegister(int memoryAddress, Value value): CPU
+  -fetchFromRegister(int memoryAddress) : Value
+  -add(Value a, Value b): Value
+  -subtract(Value a, Value b): Value
 }
 
 enum CPUStatus {
-  READY, BUSY, PAUSED, HALTED
+  READY
+  BUSY
+  PAUSED
+  HALTED
 }
 
 class Program {
   -statements (0..n)
-}
-
-class Statement {
-  -type (1..1)
-  -param1 (0..1)
-  -param2 (0..1)
-  -param3 (0..1)
 }
 
 interface Assembler {
@@ -136,9 +133,7 @@ Outbox -down-> Stack
 Stacks -down-> Stack
 Stack -down-> Value
 ALU -down-> Value
-ALU -down-> ArithmeticOperation
-Program -down-> Statement
-Statement -down-> Value
 Assembler .down.> Program
+ProgramCounter -right|> Register
 
 @enduml

@@ -9,6 +9,22 @@ public record Value(int value) {
         this((int) value);
     }
 
+    public Value increment() {
+        return new Value(value + 1);
+    }
+
+    public Value decrement() {
+        return new Value(value - 1);
+    }
+
+    public Value plus(Value otherValue) {
+        return new Value(value + otherValue.value);
+    }
+
+    public Value minus(Value otherValue) {
+        return new Value(value - otherValue.value);
+    }
+
     int asNumber() {
         return value;
     }
