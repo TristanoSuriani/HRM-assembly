@@ -15,7 +15,7 @@ class Registers {
 }
 
 class Inbox {
-  -deque (1..1)
+  -stack (1..1)
 }
 
 class Stacks {
@@ -34,7 +34,7 @@ class Stack {
 
 class Outbox
 {
-  -deque (1..1)
+  -stack (1..1)
 }
 
 class ALU {
@@ -71,10 +71,6 @@ class Value {
   -value (1..1)
   +asNumber()
   +asCharachter()
-}
-
-class Deque<Value> {
-  -values (0..n)
 }
 
 class CPU {
@@ -135,13 +131,12 @@ Memory -down-> MemoryCell
 Registers -down-> Register
 MemoryCell -down-> Value
 Register -down-> Value
-Inbox -down-> Deque
-Outbox -down-> Deque
+Inbox -down-> Stack
+Outbox -down-> Stack
 Stacks -down-> Stack
-Stack -down-> Deque
+Stack -down-> Value
 ALU -down-> Value
 ALU -down-> ArithmeticOperation
-Deque -down-> Value
 Program -down-> Statement
 Statement -down-> Value
 Assembler .down.> Program
