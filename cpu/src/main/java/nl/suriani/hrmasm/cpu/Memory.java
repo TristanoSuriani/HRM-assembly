@@ -4,7 +4,7 @@ import java.util.stream.Stream;
 
 public class Memory {
     static final int SIZE = 65536;
-    private MemoryCell[] memoryCells = new MemoryCell[SIZE];
+    private final MemoryCell[] memoryCells = new MemoryCell[SIZE];
 
     public Memory() {
         Stream.iterate(0, i -> i + 1)

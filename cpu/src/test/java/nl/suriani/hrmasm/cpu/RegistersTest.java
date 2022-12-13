@@ -4,33 +4,33 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MemoryTest {
+class RegistersTest {
     @Test
     void fetchAddressIsNegative() {
         Tester.givenAddressIs(-1)
-                .whenMemoryIsFetched()
+                .whenRegisterIsFetched()
                 .thenACannotFetchErrorOccurs();
     }
 
     @Test
-    void fetchAddressIsEqualOrGreaterThanMemorySize() {
-        Tester.givenAddressIs(Memory.SIZE)
-                .whenMemoryIsFetched()
+    void fetchAddressIsEqualOrGreaterThanRegisterSize() {
+        Tester.givenAddressIs(Registers.SIZE)
+                .whenRegisterIsFetched()
                 .thenACannotFetchErrorOccurs();
     }
 
     @Test
-    void fetchAddressIsBetween0AndMemorySize() {
+    void fetchAddressIsBetween0AndRegisterSize() {
         Tester.givenAddressIs(0)
-                .whenMemoryIsFetched()
+                .whenRegisterIsFetched()
                 .thenValueIsFetchedWithoutErrors();
 
-        Tester.givenAddressIs(Memory.SIZE / 2)
-                .whenMemoryIsFetched()
+        Tester.givenAddressIs(Registers.SIZE / 2)
+                .whenRegisterIsFetched()
                 .thenValueIsFetchedWithoutErrors();
 
-        Tester.givenAddressIs(Memory.SIZE - 1)
-                .whenMemoryIsFetched()
+        Tester.givenAddressIs(Registers.SIZE - 1)
+                .whenRegisterIsFetched()
                 .thenValueIsFetchedWithoutErrors();
     }
 
@@ -42,33 +42,33 @@ class MemoryTest {
     }
 
     @Test
-    void storeAddressIsEqualOrGreaterThanMemorySize() {
-        Tester.givenAddressIs(Memory.SIZE)
+    void storeAddressIsEqualOrGreaterThanRegisterSize() {
+        Tester.givenAddressIs(Registers.SIZE)
                 .whenAValueIsStored('t')
                 .thenACannotStoreErrorOccurs();
     }
 
     @Test
     void storeValueAndFetch() {
-        Tester.givenAddressIs(Memory.SIZE / 4)
+        Tester.givenAddressIs(Registers.SIZE / 4)
                 .whenAValueIsStoredAndThenFetched(10)
                 .thenValueIsStoredWithoutErrors()
                 .thenValueIsFetchedWithoutErrors()
                 .thenFetchedValueIs(10);
 
-        Tester.givenAddressIs(Memory.SIZE / 4)
+        Tester.givenAddressIs(Registers.SIZE / 4)
                 .whenAValueIsStoredAndThenFetched('c')
                 .thenValueIsStoredWithoutErrors()
                 .thenValueIsFetchedWithoutErrors()
                 .thenFetchedValueIs('c');
 
-        Tester.givenAddressIs(Memory.SIZE / 4)
+        Tester.givenAddressIs(Registers.SIZE / 4)
                 .whenAValueIsStoredAndThenFetched('c')
                 .thenValueIsStoredWithoutErrors()
                 .thenValueIsFetchedWithoutErrors()
                 .thenFetchedValueIs(99); // ascii value of 'c'
 
-        Tester.givenAddressIs(Memory.SIZE / 4)
+        Tester.givenAddressIs(Registers.SIZE / 4)
                 .whenAValueIsStoredAndThenFetched(99) // ascii value of 'c'
                 .thenValueIsStoredWithoutErrors()
                 .thenValueIsFetchedWithoutErrors()
@@ -76,7 +76,7 @@ class MemoryTest {
     }
 
     @Test
-    void storeAddressIsBetween0AndMemorySize() {
+    void storeAddressIsBetween0AndRegisterSize() {
         Tester.givenAddressIs(0)
                 .whenAValueIsStored(10)
                 .thenValueIsStoredWithoutErrors();
@@ -85,38 +85,38 @@ class MemoryTest {
                 .whenAValueIsStored('c')
                 .thenValueIsStoredWithoutErrors();
 
-        Tester.givenAddressIs(Memory.SIZE / 2)
+        Tester.givenAddressIs(Registers.SIZE / 2)
                 .whenAValueIsStored(10)
                 .thenValueIsStoredWithoutErrors();
 
-        Tester.givenAddressIs(Memory.SIZE / 2)
+        Tester.givenAddressIs(Registers.SIZE / 2)
                 .whenAValueIsStored('c')
                 .thenValueIsStoredWithoutErrors();
 
-        Tester.givenAddressIs(Memory.SIZE - 1)
+        Tester.givenAddressIs(Registers.SIZE - 1)
                 .whenAValueIsStored(10)
                 .thenValueIsStoredWithoutErrors();
 
-        Tester.givenAddressIs(Memory.SIZE - 1)
+        Tester.givenAddressIs(Registers.SIZE - 1)
                 .whenAValueIsStored('c')
                 .thenValueIsStoredWithoutErrors();
     }
 
     private static class Tester {
-        private int address;
-        private Memory memory;
+        private int idx;
+        private Registers registers;
 
-        static Tester givenAddressIs(int address) {
+        static Tester givenAddressIs(int idx) {
             var tester = new Tester();
-            tester.memory = new Memory();
-            tester.address = address;
+            tester.registers = new Registers();
+            tester.idx = idx;
             return tester;
         }
 
-        Asserter whenMemoryIsFetched() {
+        Asserter whenRegisterIsFetched() {
             var asserter = new Asserter();
             try {
-                asserter.value = memory.fetch(address);
+                asserter.value = registers.fetch(idx);
             } catch (CannotFetchException cannotFetchException) {
                 asserter.cannotFetch = true;
             }
@@ -127,7 +127,7 @@ class MemoryTest {
             var asserter = new Asserter();
             var value = new Value(intValue);
             try {
-                memory.store(address, value);
+                registers.store(idx, value);
                 asserter.value = null;
             } catch (CannotStoreException cannotStoreException) {
                 asserter.cannotStore = true;
@@ -139,7 +139,7 @@ class MemoryTest {
             var asserter = new Asserter();
             var value = new Value(charValue);
             try {
-                memory.store(address, value);
+                registers.store(idx, value);
                 asserter.value = null;
             } catch (CannotStoreException cannotStoreException) {
                 asserter.cannotStore = true;
@@ -151,10 +151,10 @@ class MemoryTest {
             var asserter = new Asserter();
             var value = new Value(intValue);
             try {
-                memory.store(address, value);
-                asserter.value = memory.fetch(address);
+                registers.store(idx, value);
+                asserter.value = registers.fetch(idx);
             } catch (CannotStoreException cannotStoreException) {
-                asserter.cannotFetch = true;
+                asserter.cannotStore = true;
             }
             return asserter;
         }
@@ -163,8 +163,8 @@ class MemoryTest {
             var asserter = new Asserter();
             var value = new Value(charValue);
             try {
-                memory.store(address, value);
-                var fetchedValue = memory.fetch(address);
+                registers.store(idx, value);
+                var fetchedValue = registers.fetch(idx);
                 asserter.value = fetchedValue;
             } catch (CannotStoreException cannotStoreException) {
                 asserter.cannotFetch = true;
