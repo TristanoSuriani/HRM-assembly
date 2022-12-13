@@ -2,6 +2,9 @@
 
 class Register {
   -value (1..1)
+
+  +fetch(): Value
+   +store(value)
 }
 
 class Registers {
@@ -37,12 +40,15 @@ class Memory {
 
 class MemoryCell {
  -value (1..1)
+
+ +fetch(): Value
+ +store(value)
 }
 
 class Value {
   -value (1..1)
-  +getNumber()
-  +getCharachter()
+  +asNumber()
+  +asCharachter()
 }
 
 class Deque<Value> {

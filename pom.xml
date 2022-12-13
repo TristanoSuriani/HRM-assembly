@@ -1,36 +1,38 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.example</groupId>
+  <groupId>nl.suriani</groupId>
   <artifactId>HRM-assembly</artifactId>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>FunctionalProgrammingWithJava1</name>
+  <name>Human Resources Machine Assembly</name>
   <url>http://maven.apache.org</url>
   <properties>
-    <maven.compiler.source>7</maven.compiler.source>
-    <maven.compiler.target>7</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <junit-jupiter.version>5.9.0</junit-jupiter.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
-      <version>5.6.2</version>
+      <version>${junit-jupiter.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>1.18.12</version>
-    </dependency>
+
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-params</artifactId>
-      <version>5.6.2</version>
+      <version>${junit-jupiter.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <modules>
+    <module>assembler</module>
+    <module>cpu</module>
+  </modules>
 
   <build>
     <plugins>
@@ -39,8 +41,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
           <configuration>
-              <source>10</source>
-              <target>10</target>
+              <source>17</source>
+              <target>17</target>
           </configuration>
       </plugin>
     </plugins>
