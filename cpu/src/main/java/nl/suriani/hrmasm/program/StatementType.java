@@ -17,6 +17,7 @@ public enum StatementType {
     JUMP_IF_NEGATIVE,
     JUMP_IF_POSITIVE,
     MOV,
+    NOOP,
     OUTBOX,
     SUB
 }

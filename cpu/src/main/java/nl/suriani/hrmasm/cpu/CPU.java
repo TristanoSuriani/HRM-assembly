@@ -3,10 +3,12 @@ package nl.suriani.hrmasm.cpu;
 import nl.suriani.hrmasm.program.Program;
 import nl.suriani.hrmasm.program.Instruction;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CPU {
+    public static final int MAXMUM_AMOUNT_INSTRUCTION_PER_PROGRAM_EXECUTION = 16000;
     private CpuStatus status;
     private Registers registers;
     private Register mRegister;
@@ -36,7 +38,9 @@ public class CPU {
     }
 
     public CPU execute() {
-        while (programCounter.instructionNumber() < program.instructions().size()) {
+        int instructionsCounter = 0;
+        while (programCounter.instructionNumber() < program.instructions().size() &&
+            !List.of(CpuStatus.HALTED, CpuStatus.PAUSED).contains(status)) {
             printDebugInstructionInfo();
 
             var instruction = program.instructions().get(programCounter.instructionNumber());
@@ -44,8 +48,16 @@ public class CPU {
             switch (instruction.type()) {
                 case INBOX -> handleInbox();
                 case OUTBOX -> handleOutbox();
+                case JUMP -> {
+                    handleJump(instruction.params().get(0));
+                    continue;
+                }
             }
             programCounter.increment();
+            instructionsCounter += 1;
+            if (instructionsCounter == MAXMUM_AMOUNT_INSTRUCTION_PER_PROGRAM_EXECUTION) {
+                status = CpuStatus.HALTED;
+            }
         }
         return this;
     }
@@ -81,13 +93,22 @@ public class CPU {
     }
 
     private void handleInbox() {
-        var value = popFromInbox().orElseThrow();
-        mRegister.store(value);
+        var maybeValue = popFromInbox();
+        if (maybeValue.isEmpty()) {
+            status = CpuStatus.HALTED;
+            return;
+        }
+        mRegister.store(maybeValue.get());
     }
 
     private void handleOutbox() {
         var value = mRegister.fetch();
         pushIntoOutbox(value);
+    }
+
+    private void handleJump(String param) {
+        var value = new Value(Integer.parseInt(param));
+        programCounter.store(value);
     }
 
     private void _reset() {

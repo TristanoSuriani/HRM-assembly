@@ -21,6 +21,13 @@ class CPUTest {
     }
 
     @Test
+    void noProgramLoaded() {
+        givenNumbersArePushedIntoInbox(1, 2, 3);
+        whenProgramIsExecutedWithDebugOutput();
+        thenOutboxContainsNoValues();
+    }
+
+    @Test
     void hrm01() {
         givenCpuIsLoadedWithProgram(
                 statement(INBOX),
@@ -31,9 +38,22 @@ class CPUTest {
                 statement(OUTBOX)
         );
 
-        givenValuesArePushedIntoInbox(1, 2, 3);
+        givenNumbersArePushedIntoInbox(1, 2, 3);
         whenProgramIsExecutedWithDebugOutput();
-        thenOutboxContainsValues(1, 2, 3);
+        thenOutboxContainsNumbers(1, 2, 3);
+    }
+
+    @Test
+    void hrm02() {
+        givenCpuIsLoadedWithProgram(
+                statement(INBOX),
+                statement(OUTBOX),
+                statement(JUMP, "0")
+        );
+
+        givenCharachtersArePushedIntoInbox('A', 'U', 'T', 'O', 'E', 'X', 'E', 'C');
+        whenProgramIsExecutedWithDebugOutput();
+        thenOutboxContainsCharachters('A', 'U', 'T', 'O', 'E', 'X', 'E', 'C');
     }
 
     private void givenCpuIsLoadedWithProgram(Instruction... instructions) {
@@ -44,9 +64,15 @@ class CPUTest {
         cpu.pushIntoInbox(new Value(value));
     }
 
-    private void givenValuesArePushedIntoInbox(int... values) {
+    private void givenNumbersArePushedIntoInbox(int... values) {
         Arrays.stream(values)
                 .mapToObj(Value::new)
+                .forEach(value -> cpu.pushIntoInbox(value));
+    }
+
+    private void givenCharachtersArePushedIntoInbox(Character... values) {
+        Arrays.stream(values)
+                .map(Value::new)
                 .forEach(value -> cpu.pushIntoInbox(value));
     }
 
@@ -58,7 +84,7 @@ class CPUTest {
         cpu.debug().execute();
     }
 
-    private void thenOutboxContainsValues(int... values) {
+    private void thenOutboxContainsNumbers(int... values) {
         var debugger = cpu.getDebugger();
         var valuesOutbox = debugger.valuesOutbox().stream()
                 .map(Value::asNumber)
@@ -69,6 +95,23 @@ class CPUTest {
                 .toArray();
 
         assertArrayEquals(expectedValues, valuesOutbox);
+    }
+
+    private void thenOutboxContainsCharachters(Character... values) {
+        var debugger = cpu.getDebugger();
+        var valuesOutbox = debugger.valuesOutbox().stream()
+                .map(Value::asCharachter)
+                .toArray();
+
+        var expectedValues = Arrays.stream(values)
+                .toArray();
+
+        assertArrayEquals(expectedValues, valuesOutbox);
+    }
+
+    private void thenOutboxContainsNoValues() {
+        var debugger = cpu.getDebugger();
+        assertTrue(debugger.valuesOutbox().isEmpty());
     }
 
 }
