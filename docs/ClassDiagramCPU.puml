@@ -8,6 +8,9 @@ class Register {
 }
 
 class ProgramCounter {
+  -Value value (1..1)
+  +store(Value value)
+  +instructionNumber(): int
 }
 
 class Registers {
@@ -123,6 +126,7 @@ CPU -right-> ALU
 CPU -down-> Memory
 CPU -left-> Stacks
 CPU -down-> Program
+CPU -down-> ProgramCounter
 CPU -left-> CPUStatus
 Memory -down-> MemoryCell
 Registers -down-> Register
@@ -134,6 +138,6 @@ Stacks -down-> Stack
 Stack -down-> Value
 ALU -down-> Value
 Assembler .down.> Program
-ProgramCounter -right|> Register
+ProgramCounter -down-> Value
 
 @enduml
