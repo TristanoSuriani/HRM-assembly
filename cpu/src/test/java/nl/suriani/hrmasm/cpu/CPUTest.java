@@ -28,6 +28,12 @@ class CPUTest {
     }
 
     @Test
+    void infiniteLoopDoesntBlockTheMachineForever() {
+        givenCpuIsLoadedWithProgram(statement(JUMP, "0"));
+        whenProgramIsExecutedWithDebugOutput();
+    }
+
+    @Test
     void hrm01() {
         givenCpuIsLoadedWithProgram(
                 statement(INBOX),
@@ -40,6 +46,7 @@ class CPUTest {
 
         givenNumbersAreAddedToInbox(1, 2, 3);
         whenProgramIsExecuted();
+        thenCPUIsHalted();
         thenOutboxContainsNumbers(1, 2, 3);
     }
 
@@ -53,7 +60,8 @@ class CPUTest {
 
         givenCharachtersAreAddedToInbox('A', 'U', 'T', 'O', 'E', 'X', 'E', 'C');
         whenProgramIsExecuted();
-        thenOutboxContainsCharachters('A', 'U', 'T', 'O', 'E', 'X', 'E', 'C');
+        thenCPUIsHalted();
+        thenOutboxContainsCharacters('A', 'U', 'T', 'O', 'E', 'X', 'E', 'C');
     }
 
     @Test
@@ -76,8 +84,8 @@ class CPUTest {
         givenCharachterIsPushedIntoRegister(5, 'E');
 
         whenProgramIsExecutedWithDebugOutput();
-
-        thenOutboxContainsCharachters('B', 'U', 'G');
+        thenCPUIsHalted();
+        thenOutboxContainsCharacters('B', 'U', 'G');
     }
 
     private void givenCpuIsLoadedWithProgram(Instruction... instructions) {
@@ -121,7 +129,7 @@ class CPUTest {
         assertArrayEquals(expectedValues, valuesOutbox);
     }
 
-    private void thenOutboxContainsCharachters(Character... values) {
+    private void thenOutboxContainsCharacters(Character... values) {
         var debugger = cpu.getDebugger();
         var valuesOutbox = debugger.valuesOutbox().stream()
                 .map(Value::asCharachter)
@@ -138,4 +146,11 @@ class CPUTest {
         assertTrue(debugger.valuesOutbox().isEmpty());
     }
 
+    private void thenCPUIsHalted() {
+        assertTrue(cpu.isHalted());
+    }
+
+    private void thenCPUIsHaltedAbnormally() {
+        assertTrue(cpu.isHaltedAbnormally());
+    }
 }

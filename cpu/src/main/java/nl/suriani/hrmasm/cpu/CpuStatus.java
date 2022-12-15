@@ -4,5 +4,6 @@ public enum CpuStatus {
     READY,
     BUSY,
     PAUSED,
-    HALTED
+    HALTED,
+    HALTED_ABNORMALLY
 }

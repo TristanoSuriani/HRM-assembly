@@ -10,16 +10,17 @@
   <properties>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
-    <junit-jupiter.version>5.9.0</junit-jupiter.version>
+    <junit-jupiter.version>5.9.1</junit-jupiter.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
+      <artifactId>junit-jupiter</artifactId>
       <version>${junit-jupiter.version}</version>
       <scope>test</scope>
     </dependency>
+
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>

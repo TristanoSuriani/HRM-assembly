@@ -18,8 +18,9 @@ public class CPU {
     private Program program;
     private Debugger debugger;
     private boolean debug;
+    private int instructionsCounter;
 
-    private static final String INSTRUCTION_DEBUG_TEMPLATE = "%s - %s %s";
+    private static final String INSTRUCTION_DEBUG_TEMPLATE = "(%s) %s - %s %s";
 
     public CPU() {
         _reset();
@@ -36,11 +37,17 @@ public class CPU {
     }
 
     public CPU execute() {
-        int instructionsCounter = 0;
         while (programCounter.instructionNumber() < program.instructions().size() &&
             !List.of(CpuStatus.HALTED, CpuStatus.PAUSED).contains(status)) {
 
             printDebugInstructionInfo();
+
+            if (instructionsCounter == MAXMUM_AMOUNT_INSTRUCTION_PER_PROGRAM_EXECUTION) {
+                status = CpuStatus.HALTED_ABNORMALLY;
+                return this;
+            }
+
+            instructionsCounter += 1;
 
             var instruction = program.instructions().get(programCounter.instructionNumber());
 
@@ -54,10 +61,7 @@ public class CPU {
                 }
             }
             programCounter.increment();
-            instructionsCounter += 1;
-            if (instructionsCounter == MAXMUM_AMOUNT_INSTRUCTION_PER_PROGRAM_EXECUTION) {
-                status = CpuStatus.HALTED;
-            }
+
         }
         return this;
     }
@@ -65,6 +69,26 @@ public class CPU {
     public CPU step() {
         //TODO
         return this;
+    }
+
+    public boolean isReady() {
+        return CpuStatus.READY == status;
+    }
+
+    public boolean isBusy() {
+        return CpuStatus.BUSY == status;
+    }
+
+    public boolean isPaused() {
+        return CpuStatus.PAUSED == status;
+    }
+
+    public boolean isHalted() {
+        return CpuStatus.HALTED == status;
+    }
+
+    public boolean isHaltedAbnormally() {
+        return CpuStatus.HALTED_ABNORMALLY == status;
     }
 
     void addToInbox(Value value) {
@@ -130,11 +154,14 @@ public class CPU {
         stacks = new Stacks();
         alu = new ALU();
         program = Program.program();
+        debug = false;
+        instructionsCounter = 0;
     }
 
     private void printDebugInstructionInfo() {
         if (debug) {
             var debugInfo = String.format(INSTRUCTION_DEBUG_TEMPLATE,
+                    instructionsCounter,
                     programCounter.instructionNumber(),
                     program.instructions().get(programCounter.instructionNumber()).type(),
                     String.join(" ",
