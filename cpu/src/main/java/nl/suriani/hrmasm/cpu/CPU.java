@@ -63,6 +63,7 @@ public class CPU {
             programCounter.increment();
 
         }
+        status = CpuStatus.HALTED;
         return this;
     }
 

@@ -23,14 +23,14 @@ class CPUTest {
     @Test
     void noProgramLoaded() {
         givenNumbersAreAddedToInbox(1, 2, 3);
-        whenProgramIsExecutedWithDebugOutput();
+        whenProgramIsExecuted();
         thenOutboxContainsNoValues();
     }
 
     @Test
     void infiniteLoopDoesntBlockTheMachineForever() {
         givenCpuIsLoadedWithProgram(statement(JUMP, "0"));
-        whenProgramIsExecutedWithDebugOutput();
+        whenProgramIsExecuted();
     }
 
     @Test
@@ -83,7 +83,7 @@ class CPUTest {
         givenCharachterIsPushedIntoRegister(4, 'B');
         givenCharachterIsPushedIntoRegister(5, 'E');
 
-        whenProgramIsExecutedWithDebugOutput();
+        whenProgramIsExecuted();
         thenCPUIsHalted();
         thenOutboxContainsCharacters('B', 'U', 'G');
     }
@@ -109,11 +109,11 @@ class CPUTest {
     }
 
     private void whenProgramIsExecuted() {
-        cpu.execute();
+        cpu = cpu.execute();
     }
 
     private void whenProgramIsExecutedWithDebugOutput() {
-        cpu.debug().execute();
+        cpu = cpu.debug().execute();
     }
 
     private void thenOutboxContainsNumbers(int... values) {
