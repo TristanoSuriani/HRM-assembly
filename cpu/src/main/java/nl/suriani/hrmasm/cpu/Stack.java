@@ -1,9 +1,6 @@
 package nl.suriani.hrmasm.cpu;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class Stack {
     private final Deque<Value> deque;
@@ -16,6 +13,10 @@ public class Stack {
         deque.push(value);
     }
 
+    public void add(Value value) {
+        deque.add(value);
+    }
+
     public Optional<Value> pop() {
         if (deque.isEmpty()) {
             return Optional.empty();
@@ -24,6 +25,8 @@ public class Stack {
     }
 
     List<Value> debug() {
-        return deque.stream().toList();
+        var list = new ArrayList<>(deque);
+        Collections.reverse(list);
+        return list;
     }
 }

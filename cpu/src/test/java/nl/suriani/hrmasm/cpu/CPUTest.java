@@ -22,7 +22,7 @@ class CPUTest {
 
     @Test
     void noProgramLoaded() {
-        givenNumbersArePushedIntoInbox(1, 2, 3);
+        givenNumbersAreAddedToInbox(1, 2, 3);
         whenProgramIsExecutedWithDebugOutput();
         thenOutboxContainsNoValues();
     }
@@ -38,8 +38,8 @@ class CPUTest {
                 statement(OUTBOX)
         );
 
-        givenNumbersArePushedIntoInbox(1, 2, 3);
-        whenProgramIsExecutedWithDebugOutput();
+        givenNumbersAreAddedToInbox(1, 2, 3);
+        whenProgramIsExecuted();
         thenOutboxContainsNumbers(1, 2, 3);
     }
 
@@ -51,29 +51,53 @@ class CPUTest {
                 statement(JUMP, "0")
         );
 
-        givenCharachtersArePushedIntoInbox('A', 'U', 'T', 'O', 'E', 'X', 'E', 'C');
-        whenProgramIsExecutedWithDebugOutput();
+        givenCharachtersAreAddedToInbox('A', 'U', 'T', 'O', 'E', 'X', 'E', 'C');
+        whenProgramIsExecuted();
         thenOutboxContainsCharachters('A', 'U', 'T', 'O', 'E', 'X', 'E', 'C');
+    }
+
+    @Test
+    void hrm03() {
+        givenCpuIsLoadedWithProgram(
+                statement(COPY_FROM, "4"),
+                statement(OUTBOX),
+                statement(COPY_FROM, "0"),
+                statement(OUTBOX),
+                statement(COPY_FROM, "3"),
+                statement(OUTBOX)
+        );
+
+        givenNumbersAreAddedToInbox(-99, -99, -99, -99);
+        givenCharachterIsPushedIntoRegister(0, 'U');
+        givenCharachterIsPushedIntoRegister(1, 'J');
+        givenCharachterIsPushedIntoRegister(2, 'X');
+        givenCharachterIsPushedIntoRegister(3, 'G');
+        givenCharachterIsPushedIntoRegister(4, 'B');
+        givenCharachterIsPushedIntoRegister(5, 'E');
+
+        whenProgramIsExecutedWithDebugOutput();
+
+        thenOutboxContainsCharachters('B', 'U', 'G');
     }
 
     private void givenCpuIsLoadedWithProgram(Instruction... instructions) {
         cpu.load(new Program(Arrays.asList(instructions)));
     }
 
-    private void givenValueIsPushedIntoInbox(int value) {
-        cpu.pushIntoInbox(new Value(value));
-    }
-
-    private void givenNumbersArePushedIntoInbox(int... values) {
+    private void givenNumbersAreAddedToInbox(int... values) {
         Arrays.stream(values)
                 .mapToObj(Value::new)
-                .forEach(value -> cpu.pushIntoInbox(value));
+                .forEach(value -> cpu.addToInbox(value));
     }
 
-    private void givenCharachtersArePushedIntoInbox(Character... values) {
+    private void givenCharachterIsPushedIntoRegister(int register, char charachter) {
+        cpu.storeIntoRegister(register, new Value(charachter));
+    }
+
+    private void givenCharachtersAreAddedToInbox(Character... values) {
         Arrays.stream(values)
                 .map(Value::new)
-                .forEach(value -> cpu.pushIntoInbox(value));
+                .forEach(value -> cpu.addToInbox(value));
     }
 
     private void whenProgramIsExecuted() {

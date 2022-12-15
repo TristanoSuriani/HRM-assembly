@@ -1,11 +1,9 @@
 package nl.suriani.hrmasm.cpu;
 
 import nl.suriani.hrmasm.program.Program;
-import nl.suriani.hrmasm.program.Instruction;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class CPU {
     public static final int MAXMUM_AMOUNT_INSTRUCTION_PER_PROGRAM_EXECUTION = 16000;
@@ -41,11 +39,13 @@ public class CPU {
         int instructionsCounter = 0;
         while (programCounter.instructionNumber() < program.instructions().size() &&
             !List.of(CpuStatus.HALTED, CpuStatus.PAUSED).contains(status)) {
+
             printDebugInstructionInfo();
 
             var instruction = program.instructions().get(programCounter.instructionNumber());
 
             switch (instruction.type()) {
+                case COPY_FROM -> handleCopyFrom(instruction.params().get(0));
                 case INBOX -> handleInbox();
                 case OUTBOX -> handleOutbox();
                 case JUMP -> {
@@ -67,8 +67,8 @@ public class CPU {
         return this;
     }
 
-    void pushIntoInbox(Value value) {
-        inbox.push(value);
+    void addToInbox(Value value) {
+        inbox.add(value);
     }
 
     Optional<Value> popFromInbox() {
@@ -81,6 +81,10 @@ public class CPU {
 
     Optional<Value> popFromOutbox(Value value) {
         return outbox.pop();
+    }
+
+    void storeIntoRegister(int idx, Value value) {
+        registers.store(idx, value);
     }
 
     Debugger getDebugger() {
@@ -109,6 +113,11 @@ public class CPU {
     private void handleJump(String param) {
         var value = new Value(Integer.parseInt(param));
         programCounter.store(value);
+    }
+
+    private void handleCopyFrom(String param) {
+        var value = registers.fetch(Integer.parseInt(param));
+        mRegister.store(value);
     }
 
     private void _reset() {

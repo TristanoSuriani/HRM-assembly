@@ -14,6 +14,10 @@ public class Inbox {
         stack.push(value);
     }
 
+    void add(Value value) {
+        stack.add(value);
+    }
+
     public Optional<Value> pop() {
         return stack.pop();
     }
