@@ -88,6 +88,25 @@ class CPUTest {
         thenOutboxContainsCharacters('B', 'U', 'G');
     }
 
+    @Test
+    void hrm04() {
+        givenCpuIsLoadedWithProgram(
+                statement(INBOX),
+                statement(COPY_TO, "0"),
+                statement(INBOX),
+                statement(OUTBOX),
+                statement(COPY_FROM, "0"),
+                statement(OUTBOX),
+                statement(JUMP, "0")
+        );
+
+        givenCharachtersAreAddedToInbox('4', '9', 'F', 'A', '2', '7');
+
+        whenProgramIsExecuted();
+        thenCPUIsHalted();
+        thenOutboxContainsCharacters('9', '4', 'A', 'F', '7', '2');
+    }
+
     private void givenCpuIsLoadedWithProgram(Instruction... instructions) {
         cpu.load(new Program(Arrays.asList(instructions)));
     }

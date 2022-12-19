@@ -53,6 +53,7 @@ public class CPU {
 
             switch (instruction.type()) {
                 case COPY_FROM -> handleCopyFrom(instruction.params().get(0));
+                case COPY_TO -> handleCopyTo(instruction.params().get(0));
                 case INBOX -> handleInbox();
                 case OUTBOX -> handleOutbox();
                 case JUMP -> {
@@ -143,6 +144,11 @@ public class CPU {
     private void handleCopyFrom(String param) {
         var value = registers.fetch(Integer.parseInt(param));
         mRegister.store(value);
+    }
+
+    private void handleCopyTo(String param) {
+        var value = new Value(Integer.parseInt(param));
+        registers.store(value.asNumber(), mRegister.fetch());
     }
 
     private void _reset() {
