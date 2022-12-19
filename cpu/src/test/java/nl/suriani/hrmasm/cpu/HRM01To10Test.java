@@ -108,8 +108,24 @@ public class HRM01To10Test extends CPUTest {
 
         givenNumbersAreAddedToInbox(4, 7, 3, 1, -1, 2, 6, -1);
 
-        whenProgramIsExecutedWithDebugOutput();
+        whenProgramIsExecuted();
         thenCPUIsHalted();
         thenOutboxContainsNumbers(11, 4, 1, 5);
+    }
+
+    @Test
+    void hrm07() {
+        givenCpuIsLoadedWithProgram(
+                statement(INBOX),
+                statement(JUMP_IF_ZERO, "0"),
+                statement(OUTBOX),
+                statement(JUMP, "0")
+        );
+
+        givenNumbersAreAddedToInbox(9, 0, 6 , 'B', 0, 0, -4, 0);
+
+        whenProgramIsExecutedWithDebugOutput();
+        thenCPUIsHalted();
+        thenOutboxContainsNumbers(9, 6, 'B', -4);
     }
 }

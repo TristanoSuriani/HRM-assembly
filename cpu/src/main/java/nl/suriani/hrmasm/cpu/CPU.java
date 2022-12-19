@@ -10,6 +10,7 @@ public class CPU {
     private CpuStatus status;
     private Registers registers;
     private Register mRegister;
+    private Register jRegister;
     private ProgramCounter programCounter;
     private Inbox inbox;
     private Outbox outbox;
@@ -53,15 +54,20 @@ public class CPU {
             var maybeParam1 = instruction.params().stream().findFirst();
 
             switch (instruction.type()) {
-                case ADD -> handleAdd(maybeParam1.get());
-                case COPY_FROM -> handleCopyFrom(maybeParam1.get());
-                case COPY_TO -> handleCopyTo(maybeParam1.get());
+                case ADD -> handleAdd(maybeParam1.orElseThrow());
+                case COPY_FROM -> handleCopyFrom(maybeParam1.orElseThrow());
+                case COPY_TO -> handleCopyTo(maybeParam1.orElseThrow());
                 case INBOX -> handleInbox();
                 case OUTBOX -> handleOutbox();
-                case JUMP -> {
-                    handleJump(instruction.params().get(0));
-                    continue;
-                }
+                case JUMP ->
+                    handleJump(maybeParam1.orElseThrow());
+                case JUMP_IF_ZERO ->
+                    handleJumpIf0(maybeParam1.orElseThrow());
+
+            }
+            if (jRegister.fetch().asNumber() == 1) {
+                jRegister.store(new Value());
+                continue;
             }
             programCounter.increment();
 
@@ -171,6 +177,15 @@ public class CPU {
     private void handleJump(String param) {
         var value = new Value(Integer.parseInt(param));
         programCounter.store(value);
+        jRegister.store(new Value(1));
+    }
+
+    private void handleJumpIf0(String param) {
+        var value = new Value(Integer.parseInt(param));
+        if (mRegister.fetch().asNumber() == 0) {
+            programCounter.store(value);
+            jRegister.store(new Value(1));
+        }
     }
 
     private void handleCopyFrom(String param) {
@@ -187,6 +202,7 @@ public class CPU {
         status = CpuStatus.READY;
         registers = new Registers();
         mRegister = new Register();
+        jRegister = new Register();
         programCounter = new ProgramCounter();
         inbox = new Inbox();
         outbox = new Outbox();

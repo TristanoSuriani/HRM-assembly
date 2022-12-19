@@ -84,6 +84,7 @@ class CPU {
   -CPUStatus status (1..1)
   -Registers registers (1..1)
   -Register mRegister (1..1)
+  -Register jRegister (1..1)
   -ProgramCounter programCounter (1..1)
   -Inbox inbox (1..1)
   -Outbox outbox (1..1)
