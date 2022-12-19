@@ -50,10 +50,12 @@ public class CPU {
             instructionsCounter += 1;
 
             var instruction = program.instructions().get(programCounter.instructionNumber());
+            var maybeParam1 = instruction.params().stream().findFirst();
 
             switch (instruction.type()) {
-                case COPY_FROM -> handleCopyFrom(instruction.params().get(0));
-                case COPY_TO -> handleCopyTo(instruction.params().get(0));
+                case ADD -> handleAdd(maybeParam1.get());
+                case COPY_FROM -> handleCopyFrom(maybeParam1.get());
+                case COPY_TO -> handleCopyTo(maybeParam1.get());
                 case INBOX -> handleInbox();
                 case OUTBOX -> handleOutbox();
                 case JUMP -> {
@@ -120,6 +122,36 @@ public class CPU {
     CPU debug() {
         debug = true;
         return this;
+    }
+
+    private void handleAdd(String param) {
+        var value = registers.fetch(Integer.parseInt(param));
+        var a = mRegister.fetch();
+        var result = performAddition(a, value);
+        mRegister.store(result);
+        registers.store(Integer.parseInt(param), result);
+    }
+
+    private Value performAddition(Value a, Value b) {
+        alu.storeA(a);
+        alu.storeB(b);
+        var result = alu.add();
+        return result;
+    }
+
+    private void handleSubtract(String param) {
+        var value = registers.fetch(Integer.parseInt(param));
+        var a = mRegister.fetch();
+        var result = performSubtraction(a, value);
+        mRegister.store(result);
+        registers.store(Integer.parseInt(param), result);
+    }
+
+    private Value performSubtraction(Value a, Value b) {
+        alu.storeA(a);
+        alu.storeB(b);
+        var result = alu.subtract();
+        return result;
     }
 
     private void handleInbox() {

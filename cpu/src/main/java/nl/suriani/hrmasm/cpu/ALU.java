@@ -12,16 +12,20 @@ public class ALU {
         this.a = a;
     }
 
-    public void storeB(Value a) {
-        this.a = a;
+    public void storeB(Value b) {
+        this.b = b;
     }
 
     public Value add() {
-        return a.plus(b);
+        var result = a.plus(b);
+        reset();
+        return result;
     }
 
     public Value subtract() {
-        return a.minus(b);
+        var result = a.minus(b);
+        reset();
+        return result;
     }
 
     private void reset() {
